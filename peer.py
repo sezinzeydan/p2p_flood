@@ -4,33 +4,54 @@ import threading
 import time
 
 def connect(conn):
-    bil = False
+    user =False
+    pass_ = False
+    authenticated = False
     while True:
         received = conn.recv(1024)
-        
         if received == ' ':
             pass
         else:
             print(received.decode())
             #time.sleep(3)
-            if "USER bilkentstu" in received.decode():
-               bil = True
+            if authenticated == False:
+                if "USER bilkentstu" in received.decode():
+                    user = True
             
-            if "PASS cs421s2021" in received.decode() and bil:
-                print("HELLLOOO")
-                bil = False
+                if "PASS cs421s2021" in received.decode() and user:
+                    print("HELLLOOO")
+                    pass_ = True
+                    authenticated = True
+                # print(received.decode())
+                    conn.sendall(b'OK\r\n')
+                    print("Basarili")
 
-            # print(received.decode())
-                print("Basarili")
-            else:
-                print("refused")
-                exit(0)
+                if user == False and pass_ == False:
+                    conn.sendall(b'INVALID CRED\r\n')
+                    print("refused")
+                    #exit(0)
+            
 
 
 def handleClient(s, port_number):
     print("TCP connection established with peer" + str(port_number))
     s.sendall(b'USER bilkentstu\r\n')
     s.sendall(b'PASS cs421s2021\r\n')
+    conn = s.accept()
+    data  = conn.recv(1024)
+    if "OK" in data.decode():
+        while True:
+            now = datetime.now()
+            hour = now.strftime("%H:%M:%S")
+            if hour[-2:] == "00":
+                peer_id = port_number - 60000
+                counter = 0
+                while counter < 7:
+                    s.sendall()
+    else:
+        s.shutdown(s.SHUT_RDWR)
+        s.close()
+
 
 
 arg = sys.argv
