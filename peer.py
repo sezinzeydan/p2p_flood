@@ -42,9 +42,8 @@ def connect(conn):
                    
                     thread = threading.Thread(target=send_msg, args=([msg]))
                     thread.start()
-                    time.sleep(5)
                     #print("Thread msg is joined")
-                    #thread.join()
+                    thread.join()
                    
                 else:
                     floods[msg] += 1
